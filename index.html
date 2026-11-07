@@ -348,6 +348,7 @@ body.covered #app,body.covered .mb,body.covered #toast{visibility:hidden}
       </div>
       <button class="ibtn" data-act="cover" id="coverBtn" title="캘린더 내용을 모두 가려요 (수업·화면 공유 중) · 단축키 Alt+H">🙈 화면 가리기</button>
       <button class="ibtn" data-act="import">📥 가져오기</button>
+      <a class="ibtn round" href="guide.html" target="_blank" rel="noopener" aria-label="사용법" title="사용법" style="text-decoration:none">?</a>
       <button class="ibtn round" data-act="settings" aria-label="설정" title="설정">⚙</button>
     </header>
     <section id="view"></section>
@@ -579,11 +580,51 @@ async function loadShared(refresh){
     for(const k of ['weekly','annual']){const d=j[k]||{};(d.items||[]).forEach(x=>S.school.push({...x,src:'gsheet'}));SHARED.cover[k]=d.cover||[];SHARED.counts[k]=(d.items||[]).length}
     SHARED.generatedAt=j.generatedAt;SHARED.ok=true;SHARED.err='';
   }catch(e){SHARED.ok=false;SHARED.err=location.protocol==='file:'?'파일로 열면 학교 자료를 못 불러와요. 인터넷 주소(https://…)로 열어 주세요.':'학교 자료를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'}
+  for(const k of ['weekly','annual'])if(S.settings.mySheets&&S.settings.mySheets[k])applyMySheet(k,lsGet('tcal.mysheet.'+k,null));
   try{const a=await getJSON('data/acad.json');if(a&&Array.isArray(a.items)&&a.items.length)SHARED.acad=a}catch(e){}
   const g=SHARED.generatedAt?new Date(SHARED.generatedAt):null;
   SYNC.err=!SHARED.ok;SYNC.state=SHARED.ok?`✓ 학교 자료${g?` ${g.getMonth()+1}/${g.getDate()} ${pad(g.getHours())}:${pad(g.getMinutes())} 기준`:''}`:'⚠ '+SHARED.err;
   if(refresh){if(!$$('.mb').length)render();else renderSide()}
 }
+/* ---------- 내 학교 시트 직접 연결 ---------- */
+const MYS={busy:{},err:{}};
+function parseGenericSheets(sheets,kind){
+  const items=[],seen={};
+  for(const sh of sheets){const rows=sh.rows;let hi=-1,dc=-1,tc=-1,tmc=-1,nc=-1;
+    for(let i=0;i<Math.min(12,rows.length);i++){const r=rows[i].map(c=>String(c??''));const d=r.findIndex(h=>/날짜|일자|일시|월일|date/i.test(h));const t=r.findIndex(h=>/내용|행사|일정|업무|제목|활동/.test(h));
+      if(d>=0&&t>=0){hi=i;dc=d;tc=t;tmc=r.findIndex(h=>/시간|시각|교시/.test(h));nc=r.findIndex(h=>/장소|비고|담당|대상|부서/.test(h));break}}
+    if(hi<0)continue;let last=null;
+    for(const r of rows.slice(hi+1)){let dr=parseDateCell(r[dc]);if(!dr&&last&&String(r[dc]??'').trim()==='')dr=last;if(dr)last=dr;
+      const title=String(r[tc]??'').trim().replace(/\s*\n\s*/g,' ');if(!dr||!title)continue;const key=kind+dr[0]+title;seen[key]=(seen[key]||0)+1;
+      items.push({id:'m'+hashStr(key+'|'+seen[key]),kind,date:dr[0],end:dr[1]||'',time:tmc>=0?parseTime(r[tmc]):'',title,note:nc>=0?String(r[nc]??'').trim():'',dept:'',src:'gsheet'})}}
+  return{items,cover:[],sheets:sheets.length};
+}
+function applyMySheet(k,cache){
+  if(!cache||!Array.isArray(cache.items))return false;
+  S.school=S.school.filter(x=>!(x.src==='gsheet'&&x.kind===k)).concat(cache.items.map(x=>({...x,kind:k,src:'gsheet'})));
+  SHARED.cover[k]=cache.cover||[];SHARED.counts[k]=cache.items.length;return true;
+}
+async function fetchMySheet(k,quiet){
+  const id=S.settings.mySheets[k];if(!id)return;
+  if(typeof XLSX==='undefined'){MYS.err[k]='엑셀 읽기 도구를 불러오지 못했어요. 새로고침해 주세요.';return}
+  MYS.busy[k]=true;MYS.err[k]='';if(S.view==='settings')render();
+  try{
+    const r=await fetch(`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`);
+    if(!r.ok)throw new Error('시트를 받지 못했어요 ('+r.status+')');
+    const buf=await r.arrayBuffer();const head=new Uint8Array(buf.slice(0,2));
+    if(!(head[0]===0x50&&head[1]===0x4b))throw new Error('시트를 읽을 수 없어요. 공유를 "링크가 있는 모든 사용자"로 바꿔 주세요.');
+    const wb=XLSX.read(buf,{type:'array'});
+    const sheets=wb.SheetNames.map(n=>({name:n,rows:XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,defval:''})}));
+    let res=parseDeptSheets(sheets,{schoolYear:S.settings.schoolYear,kind:k,periods:periods()});
+    if(!res.items.length)res=parseGenericSheets(sheets,k);
+    if(!res.items.length)throw new Error('시트에서 날짜·내용 표를 찾지 못했어요. "일·요일·부서" 또는 "날짜·내용" 제목 줄이 있는지 확인해 주세요.');
+    const cache={at:Date.now(),items:res.items.map(({src,...x})=>x),cover:res.cover};
+    try{localStorage.setItem('tcal.mysheet.'+k,JSON.stringify(cache))}catch(e){}
+    applyMySheet(k,cache);if(!quiet)toast(`${k==='weekly'?'주간 업무계획':'월중 행사계획'} ${res.items.length}건을 불러왔어요`);
+  }catch(e){MYS.err[k]=(e&&e.message&&!/Failed to fetch/.test(e.message))?e.message:'시트를 불러오지 못했어요. 인터넷 연결과 공유 설정을 확인해 주세요.'}
+  MYS.busy[k]=false;if(!$$('.mb').length)render();
+}
+function refreshMySheets(force){for(const k of ['weekly','annual']){const id=S.settings.mySheets&&S.settings.mySheets[k];if(!id)continue;const c=lsGet('tcal.mysheet.'+k,null);if(force||!c||Date.now()-c.at>30*60e3)fetchMySheet(k,!force)}}
 /* ---------- state ---------- */
 function defaultPeriods(){return [['09:00','09:45'],['09:55','10:40'],['10:50','11:35'],['11:45','12:30'],['13:20','14:05'],['14:15','15:00'],['15:10','15:55']].map((p,i)=>({n:i+1,start:p[0],end:p[1]}))}
 function defaultSettings(){const now=new Date();return{
@@ -591,7 +632,7 @@ function defaultSettings(){const now=new Date();return{
   myName:'',periods:Array.isArray(CONFIG.periods)&&CONFIG.periods.length?JSON.parse(JSON.stringify(CONFIG.periods)):defaultPeriods(),weekend:false,
   cats:[{id:'work',name:'업무',color:'#0f766e',visible:true},{id:'personal',name:'개인',color:'#db2777',visible:true},{id:'meet',name:'회의·연수',color:'#2563eb',visible:true}],
   layers:{timetable:true,acad:true,annual:true,weekly:true,holiday:true},showHidden:false,
-  hiddenDepts:[],hideAnnualInWeekly:true,
+  hiddenDepts:[],hideAnnualInWeekly:true,mySheets:{weekly:'',annual:''},
   home:{loc:CONFIG.weatherLoc||'',links:(CONFIG.links||[]).map((l,k)=>({id:'l'+k,name:l.name,url:l.url})),ddays:[],autoDday:true},
   gsync:{weekly:{id:'1m3rjtfsqgjFy4xawbdCs4U4xjaFqBzY2s3TV5X1rnE8',last:0,count:0,cover:[]},annual:{id:'1Pg0SXUYWaHT1ij-H71uDNgf0I559h-PKMzzHB8IttjM',last:0,count:0,cover:[]}}}}
 const S={settings:defaultSettings(),base:{},changes:{},school:[],events:[],cursor:new Date(),view:(lsGet('tcal.alwaysHome',true)?'home':lsGet('tcal.view','home')),privacy:lsGet('tcal.privacy',false)};
@@ -647,6 +688,7 @@ function hydrateOne(k,v){{
       S.settings.layers=Object.assign(defaultSettings().layers,(v.settings||{}).layers||{});
       const dg=defaultSettings().gsync;S.settings.gsync=S.settings.gsync||dg;for(const k of ['weekly','annual'])S.settings.gsync[k]=Object.assign(dg[k],S.settings.gsync[k]||{});
       if(!Array.isArray(S.settings.hiddenDepts))S.settings.hiddenDepts=[];
+      S.settings.mySheets=Object.assign({weekly:'',annual:''},S.settings.mySheets||{});
       S.settings.home=Object.assign(defaultSettings().home,S.settings.home||{});
       if(!Array.isArray(S.settings.cats)||!S.settings.cats.length)S.settings.cats=d.cats;
       if(!Array.isArray(S.settings.periods))S.settings.periods=defaultPeriods();
@@ -970,6 +1012,10 @@ function viewSettings(){
   return `<div class="set">
   <div class="card"><h3>학교 자료 <span class="sub">관리자가 연결한 주간 업무계획·월중 행사계획·학사일정</span></h3>
     <p class="desc">${SHARED.ok?`주간계획 ${SHARED.counts.weekly}건 · 월중 행사계획 ${SHARED.counts.annual}건 · 학사일정 ${ACADX.items().length}건${SHARED.generatedAt?` — ${new Date(SHARED.generatedAt).toLocaleString('ko-KR')} 기준`:''}. 매일 아침 자동으로 새로 받아요.`:`<span style="color:var(--holi)">${esc(SHARED.err)}</span>`}</p>
+    <div class="small" style="margin:6px 0 8px"><b>우리 학교 시트 직접 연결</b> <span class="muted">— 비워 두면 위의 학교 기본 자료를 써요. 다른 학교 선생님은 자기 학교 구글 시트 링크를 넣으세요. (시트 공유: "링크가 있는 모든 사용자")</span></div>
+    ${['weekly','annual'].map(k=>{const id=s.mySheets[k];const c=lsGet('tcal.mysheet.'+k,null);const st=MYS.busy[k]?'불러오는 중…':MYS.err[k]?`<span style="color:var(--holi)">${esc(MYS.err[k])}</span>`:id&&c?`${c.items.length}건 · ${new Date(c.at).toLocaleString('ko-KR')} 불러옴`:id?'아직 불러오지 않았어요':'학교 기본 자료 사용 중';
+      return `<div class="gsrow"><b>${k==='weekly'?'주간 업무계획':'월중 행사계획'}</b><input class="inp" data-mysheet="${k}" value="${id?'https://docs.google.com/spreadsheets/d/'+esc(id)+'/edit':''}" placeholder="구글 시트 링크 붙여넣기 (비우면 학교 기본)">${id?`<a class="btn sm" href="https://docs.google.com/spreadsheets/d/${esc(id)}/edit" target="_blank" rel="noopener">열기</a>`:'<span></span>'}<div class="gsstat">${st}</div></div>`}).join('')}
+    <p class="hint" style="margin:4px 0 10px">학사일정은 <b>📥 가져오기</b>에서 학교 학사일정 한글 파일(.hwpx)을 고르면 내 학사일정으로 바뀌어요.</p>
     <label class="toggle"><input type="checkbox" id="s-dedupe" ${s.hideAnnualInWeekly?'checked':''}> 주간계획이 나온 주에는 월중 행사계획을 숨기기 <span class="muted small">— 같은 내용이 두 번 보이지 않게</span></label>
     <div class="row-btns"><button class="btn sm primary" data-act="syncNow">🔄 학교 자료 새로 받기</button></div></div>
   <div class="card"><h3>홈 화면</h3><div class="grid2">
@@ -1007,6 +1053,9 @@ function mountSettings(){
   on('#s-wk','change',e=>{s.weekend=e.target.value==='1';saveSettings();render()});
 }
 function settingsChange(t){const s=S.settings;
+    if(t.dataset.mysheet){const k=t.dataset.mysheet;const v=t.value.trim();const id=v?sheetIdFrom(v):'';if(v&&!id){toast('구글 시트 링크를 알아보지 못했어요');return}
+      s.mySheets[k]=id||'';saveSettings();MYS.err[k]='';
+      if(id)fetchMySheet(k,false);else{try{localStorage.removeItem('tcal.mysheet.'+k)}catch(e){}loadShared(true);toast('학교 기본 자료로 돌아갔어요')}return}
     if(t.id==='s-loc'){s.home.loc=t.value.trim()||'부산 강서구';saveSettings();return}
     if(t.id==='s-always'){lsSet('tcal.alwaysHome',t.checked);return}
     if(t.id==='s-autodd'){s.home.autoDday=t.checked;saveSettings();return}
@@ -1471,7 +1520,7 @@ document.addEventListener('click',async e=>{
     case 'addBox':openBoxEditor(null);break;
     case 'deptAll':S.settings.hiddenDepts=[];saveSettings();render();break;
     case 'deptNone':S.settings.hiddenDepts=allDepts();saveSettings();render();break;
-    case 'syncNow':SYNC.state='🔄 학교 자료 받는 중…';renderSide();loadShared(true).then(()=>toast(SHARED.ok?'학교 자료를 새로 받았어요':SHARED.err));break;
+    case 'syncNow':SYNC.state='🔄 학교 자료 받는 중…';renderSide();loadShared(true).then(()=>{refreshMySheets(true);toast(SHARED.ok?'학교 자료를 새로 받았어요':SHARED.err)});break;
     case 'lookImgClear':LOOK.img='';applyLook();saveLook();render();break;
     case 'hideLocalNote':lsSet('tcal.localNote2',true);render();break;
     case 'addPeriod':{const P=periods();const l=P[P.length-1];const e=toMin(l.end)+10;const s=pad(Math.floor(e/60))+':'+pad(e%60);const f=e+45;P.push({n:l.n+1,start:s,end:pad(Math.floor(f/60)%24)+':'+pad(f%60)});saveSettings();render();break}
@@ -1663,7 +1712,8 @@ function viewHome(){
   if(!hasBase)o+=`<div class="card welcome"><h3>처음 오셨네요 👋</h3><ol style="margin:0;padding-left:20px;line-height:1.8">
     <li><button class="linkbtn" data-act="settings">⚙ 설정</button>에서 <b>교시 시간</b>을 확인하고 <b>내 기본 시간표</b>를 넣어 주세요. 시트에서 표를 복사해 한 번에 붙여넣을 수도 있어요.</li>
     <li>학사일정·주간계획·월중 행사는 자동으로 들어와요. 날짜를 눌러 <b>내 일정</b>을 추가해 보세요.</li>
-    <li>내 일정은 이 브라우저에만 저장돼요. 가끔 <b>설정 › 백업 파일 내려받기</b>를 해 두세요.</li></ol></div>`;
+    <li>내 일정은 이 브라우저에만 저장돼요. 가끔 <b>설정 › 백업 파일 내려받기</b>를 해 두세요.</li>
+    <li>자세한 방법은 오른쪽 위 <a href="guide.html" target="_blank" rel="noopener" class="linkbtn">? 사용법</a>을 보세요.</li></ol></div>`;
   const sch=schoolOn(t),evs=eventsOn(t);
   o+=`<div class="card"><h3>오늘 일정 <span class="sub">${now.getMonth()+1}/${now.getDate()} ${DOW[w]}</span><span class="sub" style="margin-left:auto"><button class="linkbtn" data-goto="${t}">하루 보기 ›</button></span></h3><div class="list">
     ${hol&&L.holiday?chipHol(t):''}${sch.map(x=>chipSchool(x,true)).join('')}${S.privacy?'':evs.map(ev=>chipEvt(ev,t,true)).join('')}
@@ -1822,8 +1872,8 @@ async function boot(){
   await loadConfig();S.settings=defaultSettings();
   try{hydrate(await Store.loadAll())}catch(e){}
   await loadShared(false);
-  $('#loading').remove();setSave('local');render();
-  setInterval(()=>{if(!document.hidden)loadShared(true)},60*60e3);
+  $('#loading').remove();setSave('local');render();refreshMySheets(false);
+  setInterval(()=>{if(!document.hidden){loadShared(true);refreshMySheets(false)}},60*60e3);
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 boot();

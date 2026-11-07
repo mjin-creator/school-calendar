@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>학교 캘린더 사용법</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d1d1f;--muted:#66625c;--line:#e5e0d6;--bg:#f6f4ef;--panel:#fffdf9;--accent:#0f766e;--soft:#dcefea;--warn:#b45309;--warn-soft:#fbecd9;--red:#d62f2f}
+*{box-sizing:border-box}
+body{margin:0;font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink);background:var(--bg);line-height:1.75;font-size:15.5px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:40px 22px 80px}
+header.top{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none}
+h1{font-size:28px;margin:0;line-height:1.3}
+.lead{color:var(--muted);margin:6px 0 26px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:34px}
+nav.toc b{display:block;margin-bottom:6px}
+nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:28px}
+nav.toc a{color:var(--accent);text-decoration:none}
+nav.toc a:hover{text-decoration:underline}
+section{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;margin-bottom:22px;break-inside:avoid-page}
+h2{font-size:20px;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+h2 .n{width:30px;height:30px;border-radius:9px;background:var(--soft);color:var(--accent);display:grid;place-items:center;font-size:15px;flex:none}
+h3{font-size:16px;margin:20px 0 6px}
+ol.steps{padding-left:22px;margin:6px 0}
+ol.steps li{margin:4px 0}
+.k{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 7px;font-size:13px;background:#fff;font-weight:600;white-space:nowrap}
+.ui{display:inline-block;background:var(--soft);color:var(--accent);border-radius:6px;padding:0 7px;font-weight:600;font-size:14px;white-space:nowrap}
+.tip,.warn{border-radius:12px;padding:12px 16px;margin:12px 0;font-size:14.5px}
+.tip{background:var(--soft)}
+.warn{background:var(--warn-soft)}
+.tip b:first-child,.warn b:first-child{margin-right:4px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#f3efe6;font-weight:600;white-space:nowrap}
+code{background:#f3efe6;border-radius:5px;padding:1px 6px;font-size:13.5px}
+.faq dt{font-weight:600;margin-top:14px}
+.faq dd{margin:4px 0 0;color:#3b3935}
+footer{color:var(--muted);font-size:13px;text-align:center;margin-top:30px}
+@media (max-width:640px){nav.toc ol{columns:1}h1{font-size:23px}section{padding:20px 18px}}
+@media print{body{background:#fff;font-size:12.5pt}.btns{display:none}section,nav.toc{border-color:#ccc;box-shadow:none}.wrap{padding:0}a{color:inherit}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><div class="logo">교</div><h1>학교 캘린더 사용법</h1></header>
+  <p class="lead">학사일정·주간 업무계획·월중 행사계획과 <b>내 시간표·내 일정</b>을 한 화면에서 보는 캘린더예요. 가입 없이 주소만 열면 바로 쓸 수 있어요.</p>
+  <div class="btns"><a class="btn primary" href="./">📅 캘린더 열기</a><button class="btn" onclick="window.print()">🖨 인쇄 / PDF로 저장</button></div>
+
+  <nav class="toc"><b>목차</b><ol>
+    <li><a href="#s1">처음 열기 · 앱으로 설치</a></li>
+    <li><a href="#s2">화면 둘러보기</a></li>
+    <li><a href="#s3">내 시간표 등록</a></li>
+    <li><a href="#s4">학교 계획 연결 (주간·월중·학사일정)</a></li>
+    <li><a href="#s5">내 일정 추가 · 수정 · 삭제</a></li>
+    <li><a href="#s6">D-day · 방학 D-day</a></li>
+    <li><a href="#s7">자료함</a></li>
+    <li><a href="#s8">수업 중 화면 가리기</a></li>
+    <li><a href="#s9">배경 · 투명도</a></li>
+    <li><a href="#s10">백업 · 다른 컴퓨터로 옮기기</a></li>
+    <li><a href="#s11">자주 묻는 질문</a></li>
+  </ol></nav>
+
+  <section id="s1"><h2><span class="n">1</span>처음 열기 · 앱으로 설치</h2>
+    <ol class="steps">
+      <li>안내받은 캘린더 주소를 <b>크롬</b>이나 <b>엣지</b>로 열어요.</li>
+      <li>처음 열면 홈 화면에 <b>"처음 오셨네요"</b> 안내가 나와요. 3장 순서대로 내 시간표부터 넣으면 돼요.</li>
+    </ol>
+    <h3>앱처럼 설치하기 (추천)</h3>
+    <ol class="steps">
+      <li>주소창 오른쪽의 <span class="ui">설치</span> 아이콘(모니터에 화살표 모양)을 눌러요.</li>
+      <li>바탕화면·시작 메뉴에 <b>학교 캘린더</b> 아이콘이 생기고, 브라우저와 따로 열려요.</li>
+    </ol>
+    <h3>컴퓨터를 켤 때 자동으로 열기</h3>
+    <table>
+      <tr><th>크롬</th><td>주소창에 <code>chrome://apps</code> 입력 › 학교 캘린더 아이콘 <b>오른쪽 클릭</b> › <span class="ui">로그인 시 앱 시작</span></td></tr>
+      <tr><th>엣지</th><td>주소창에 <code>edge://apps</code> 입력 › 학교 캘린더의 <b>…</b> › <span class="ui">장치 로그인 시 자동 시작</span></td></tr>
+      <tr><th>브라우저 첫 화면</th><td>브라우저 설정 › 시작 그룹(시작할 때) › 특정 페이지 열기 › 캘린더 주소 추가</td></tr>
+    </table>
+  </section>
+
+  <section id="s2"><h2><span class="n">2</span>화면 둘러보기</h2>
+    <table>
+      <tr><th>홈</th><td>오늘 날짜·요일·시계, <b>방학까지 D-day</b>, 지금 몇 교시인지, 오늘 일정, 다가오는 일주일, D-day, 구글 검색, 바로가기, 자료함</td></tr>
+      <tr><th>일</th><td>하루 시간표(바뀐 칸은 색으로 표시)와 그날의 학교 일정·내 일정</td></tr>
+      <tr><th>주</th><td>월~금 시간표 전체와 학교 일정·내 일정을 한눈에</td></tr>
+      <tr><th>월</th><td>한 달 달력. 날짜를 누르면 하루 보기, 빈 곳을 누르면 일정 추가</td></tr>
+      <tr><th>연간</th><td>학사일정과 공휴일. 수업 없는 날은 빨간 줄</td></tr>
+    </table>
+    <p><b>왼쪽 목록</b>에서 보고 싶은 것만 켜고 끌 수 있어요: 내 시간표, 학사일정, 월중 행사계획, 주간계획, 공휴일, <b>부서별</b> 보기, 내 일정 카테고리.</p>
+    <div class="tip"><b>키보드:</b> <span class="k">←</span><span class="k">→</span> 이전·다음, <span class="k">T</span> 오늘, <span class="k">D</span>·<span class="k">W</span>·<span class="k">M</span>·<span class="k">Y</span> 일·주·월·연간 보기, <span class="k">N</span> 새 일정</div>
+  </section>
+
+  <section id="s3"><h2><span class="n">3</span>내 시간표 등록</h2>
+    <h3>① 교시 시간 확인</h3>
+    <ol class="steps">
+      <li>오른쪽 위 <span class="ui">⚙</span>(설정)을 눌러요.</li>
+      <li><b>교시 시간</b> 표에서 학교 일과표와 다르면 시작·끝 시간을 고쳐요. 교시를 더하거나 뺄 수도 있어요.</li>
+    </ol>
+    <h3>② 기본 시간표 넣기</h3>
+    <ol class="steps">
+      <li>설정의 <b>기본 시간표</b> 표에서 칸마다 <code>2-3 국어</code>처럼 <b>학반 과목</b>을 적어요. 수업이 없는 칸은 비워 두세요.</li>
+      <li>또는 엑셀·구글 시트에서 <b>월~금 × 교시</b> 범위를 복사(<span class="k">Ctrl</span>+<span class="k">C</span>)하고, <span class="ui">📋 시트에서 표 붙여넣기</span>에 붙여넣은 뒤 <span class="ui">채우기</span>를 눌러요. 요일 제목 줄과 교시 열이 함께 있어도 괜찮아요.</li>
+    </ol>
+    <h3>③ 하루만 바뀐 시간표 (교체·보강·결강)</h3>
+    <ol class="steps">
+      <li><b>일</b> 또는 <b>주</b> 보기에서 바뀐 날의 시간표 칸을 눌러요.</li>
+      <li>그날의 수업을 적고 <span class="ui">이 날만 변경</span>을 눌러요. 수업이 없어졌으면 <span class="ui">결강·수업 없음으로</span>를 누르세요.</li>
+      <li>바뀐 칸은 <b>주황색</b>과 <span class="ui">변경</span> 표시로 보여요. 되돌리려면 같은 칸을 눌러 <span class="ui">기본 시간표로 되돌리기</span>.</li>
+    </ol>
+    <div class="tip"><b>자동 반영:</b> 학사일정에 있는 재량휴업일·방학(수업 없음), 요일 교체(예: 금요일 시간표로 운영), 단축수업, 동아리 날 수업 순서 조정은 내 시간표에 <b>저절로</b> 반영돼요. 학사일정 때문에 바뀐 칸은 <b>청록색</b>과 <span class="ui">학사</span>·<span class="ui">행사</span> 표시로 보여요.</div>
+  </section>
+
+  <section id="s4"><h2><span class="n">4</span>학교 계획 연결 (주간·월중·학사일정)</h2>
+    <h3>우리 학교 선생님이라면</h3>
+    <p>관리자가 <b>주간 업무계획·월중 행사계획·학사일정</b>을 미리 연결해 두었어요. 따로 할 일이 없어요. 학교 시트가 바뀌면 <b>매일 아침 자동으로</b> 새로 들어와요. 바로 받고 싶으면 설정 › <span class="ui">🔄 학교 자료 새로 받기</span>.</p>
+    <h3>다른 학교 선생님이라면 — 내 학교 시트 직접 연결</h3>
+    <ol class="steps">
+      <li>학교 구글 시트를 열고 <b>공유</b> › 일반 액세스를 <b>"링크가 있는 모든 사용자"</b>(뷰어)로 바꿔요. (이미 그렇게 되어 있으면 그대로 두세요.)</li>
+      <li>시트 주소(브라우저 주소창의 <code>https://docs.google.com/spreadsheets/d/…</code>)를 복사해요.</li>
+      <li>캘린더 <span class="ui">⚙</span> 설정 › <b>학교 자료</b> › <b>우리 학교 시트 직접 연결</b>의 <b>주간 업무계획</b> 또는 <b>월중 행사계획</b> 칸에 붙여넣고, 칸 밖을 한 번 눌러요.</li>
+      <li>"○○건을 불러왔어요"가 뜨면 끝이에요. 이후로는 열 때마다(30분 간격) 자동으로 새로 받아요.</li>
+    </ol>
+    <table>
+      <tr><th>읽을 수 있는 시트 모양</th><td>
+        ① <b>일 · 요일 · 부서1 · 부서2 …</b> 열로 된 표 (월별·주차별로 시트가 나뉘어 있어도 됨)<br>
+        ② <b>날짜 · 내용</b>(+ 시간, 장소·비고) 제목 줄이 있는 표</td></tr>
+      <tr><th>날짜 쓰는 법</th><td><code>3</code>(그 달의 3일), <code>11/3</code>, <code>11.3(화)</code>, <code>11월 3일</code>, <code>2026-11-03</code>, <code>11.10~11.12</code>(기간) 모두 알아봐요.</td></tr>
+    </table>
+    <p>링크 칸을 <b>비우면</b> 다시 학교 기본 자료를 써요.</p>
+    <h3>학사일정 (한글 파일)</h3>
+    <ol class="steps">
+      <li>학교 학사일정 한글 문서를 한글에서 <b>다른 이름으로 저장 › .hwpx</b>로 저장해요. (.hwp는 안 돼요)</li>
+      <li>캘린더 위쪽 <span class="ui">📥 가져오기</span> › <span class="ui">📄 엑셀·CSV·한글(hwpx) 파일</span>에서 그 파일을 골라요.</li>
+      <li>미리보기를 확인하고 <span class="ui">가져오기</span>. 수업 없는 날·요일 교체·단축수업까지 함께 반영돼요.</li>
+      <li>원래대로 돌리려면 설정 › <b>학사일정</b> › <span class="ui">처음 받은 학사일정으로 되돌리기</span>.</li>
+    </ol>
+    <div class="tip"><b>보기 편하게:</b> 왼쪽 <b>부서</b> 목록에서 필요한 부서만 켜 두면 화면이 훨씬 깔끔해요. 설정의 <b>"주간계획이 나온 주에는 월중 행사계획을 숨기기"</b>를 켜 두면 같은 내용이 두 번 보이지 않아요.</div>
+  </section>
+
+  <section id="s5"><h2><span class="n">5</span>내 일정 추가 · 수정 · 삭제</h2>
+    <h3>추가하기 (세 가지 방법)</h3>
+    <table>
+      <tr><th>새 일정 버튼</th><td>왼쪽 위 <span class="ui">＋ 새 일정</span> › 제목·날짜·시간 입력 › <span class="ui">저장</span></td></tr>
+      <tr><th>달력에서</th><td><b>월</b>·<b>주</b> 보기에서 날짜 칸의 <b>빈 곳</b>을 누르면 그 날짜로 새 일정 창이 열려요.</td></tr>
+      <tr><th>빠른 추가</th><td>홈·일 보기의 <b>빠른 추가</b> 칸에 <code>15:30 학년 협의회</code>처럼 쓰고 <span class="k">Enter</span>. 시간이 앞에 있으면 그 시간으로, 없으면 하루 종일 일정으로 들어가요. (<code>오후 3시 상담</code>도 돼요)</td></tr>
+    </table>
+    <h3>일정 창에서 고를 수 있는 것</h3>
+    <ul>
+      <li><b>종류:</b> 내 일정 / 주간계획 / 학사일정 — 학교 일정을 직접 더할 수도 있어요.</li>
+      <li><b>하루 종일</b>, <b>시작·끝 시간</b>, 여러 날이면 <b>종료일</b></li>
+      <li><b>카테고리:</b> 업무 · 개인 · 회의·연수 (설정에서 이름·색 바꾸기, 추가 가능)</li>
+      <li><b>반복:</b> 매일 · 평일마다 · 매주 · 매월, 반복 종료일</li>
+      <li><b>🙈 이 일정 숨기기:</b> 평소엔 안 보이고, 왼쪽 <b>"숨긴 일정도 보기"</b>를 켜야 보여요.</li>
+      <li><b>메모</b></li>
+    </ul>
+    <h3>고치기 · 지우기</h3>
+    <ol class="steps">
+      <li>달력이나 목록에서 일정을 <b>누르면</b> 수정 창이 열려요. 고치고 <span class="ui">저장</span>.</li>
+      <li>지우려면 수정 창 왼쪽 아래 <span class="ui">삭제</span>. 반복 일정은 <b>"이 날만 삭제"</b>와 <b>"모든 반복 삭제"</b> 중에서 골라요.</li>
+    </ol>
+    <div class="tip"><b>학교 시트에서 온 일정</b>은 캘린더에서 고칠 수 없어요(학교 시트에서 고쳐야 해요). 눌러서 <span class="ui">내 일정으로 복사</span>하면 내 일정으로 따로 만들어 메모·시간을 바꿀 수 있어요.</div>
+  </section>
+
+  <section id="s6"><h2><span class="n">6</span>D-day · 방학 D-day</h2>
+    <ul>
+      <li><b>방학 D-day:</b> 홈의 날짜 아래에 "겨울방학까지 D-○○"이 크게 보여요. 학사일정의 방학식 날 기준이고, 방학 중에는 "개학까지 D-○○"로 바뀌어요.</li>
+      <li><b>D-day 목록:</b> 학사일정에서 시험·수능·방학식·개학 같은 날을 자동으로 뽑아 줘요. 끄려면 설정 › 홈 화면 › "학사일정에서 D-day 자동으로 뽑기".</li>
+      <li><b>내 D-day 추가:</b> 홈의 D-day 카드 <span class="ui">＋ 추가</span> › 제목·날짜. 지우려면 줄 끝의 <b>×</b>.</li>
+    </ul>
+  </section>
+
+  <section id="s7"><h2><span class="n">7</span>자료함</h2>
+    <ol class="steps">
+      <li>홈 오른쪽 <b>자료함</b>의 상자(업무·수업·개인) 위로 <b>바탕화면의 파일을 끌어다 놓으면</b> 그 상자에 보관돼요. 한글·엑셀·PDF 등 어떤 파일이든 돼요.</li>
+      <li>보관한 파일을 <b>누르면</b> 열리거나 내려받아져요. <b>오른쪽 클릭</b>하면 이름·메모·상자를 바꿀 수 있어요.</li>
+      <li>상자끼리 끌어서 옮길 수 있고, 웹 주소(링크)를 끌어다 놓으면 바로가기로 저장돼요.</li>
+      <li><span class="ui">＋ 상자</span>로 상자를 더 만들고, 상자의 ✎로 이름·색을, 🗑로 상자를 지워요.</li>
+    </ol>
+    <div class="warn"><b>주의:</b> 자료함 파일은 <b>이 컴퓨터의 이 브라우저</b>에만 보관돼요. 다른 컴퓨터에서는 보이지 않고, 백업 파일에도 파일 자체는 들어가지 않아요. 중요한 파일은 원본을 꼭 따로 두세요. 폴더를 끌어다 놓으면 이름과 파일 수만 기록돼요.</div>
+  </section>
+
+  <section id="s8"><h2><span class="n">8</span>수업 중 화면 가리기</h2>
+    <ul>
+      <li><span class="ui">🙈 화면 가리기</span>(오른쪽 위)를 누르면 캘린더 내용이 모두 사라지고 <b>큰 시계와 날짜만</b> 보여요. 학생들 앞에서 화면을 띄울 때 쓰세요.</li>
+      <li>다시 보려면 아래의 흐릿한 <span class="ui">📅 캘린더 보기</span>를 누르거나 <span class="k">Alt</span>+<span class="k">H</span>. 가릴 때도 <span class="k">Alt</span>+<span class="k">H</span>.</li>
+      <li>가린 채로 새로고침하거나 컴퓨터를 다시 켜도 가려진 상태로 열려요.</li>
+      <li>학교 일정은 보여 주고 <b>내 일정만</b> 숨기려면 왼쪽 목록의 <b>"내 일정만 가리기"</b>를 켜요.</li>
+    </ul>
+  </section>
+
+  <section id="s9"><h2><span class="n">9</span>배경 · 투명도</h2>
+    <p>설정 › <b>화면</b>에서 <b>불투명도</b>(반투명 정도), <b>배경</b>(새벽빛·바다·숲·밤하늘·없음), <b>내 이미지</b>(사진을 배경으로), <b>뒤 배경 흐리게</b>(유리 효과)를 고를 수 있어요. 이 설정은 기기마다 따로 저장돼요.</p>
+  </section>
+
+  <section id="s10"><h2><span class="n">10</span>백업 · 다른 컴퓨터로 옮기기</h2>
+    <div class="warn"><b>꼭 알아 두세요:</b> 내 시간표와 일정은 <b>지금 쓰는 컴퓨터의 그 브라우저</b>에만 저장돼요. 다른 사람에게는 보이지 않지만, 다른 브라우저·다른 컴퓨터에도 나타나지 않아요. 브라우저의 <b>"쿠키 및 사이트 데이터 삭제"</b>를 하면 함께 지워질 수 있고, <b>시크릿 창</b>에서는 저장되지 않아요.</div>
+    <h3>백업하기</h3>
+    <ol class="steps"><li>설정 › <b>데이터</b> › <span class="ui">💾 백업 파일 내려받기</span> → <code>school-calendar-backup-날짜.json</code> 파일이 내려받아져요. 한 달에 한 번쯤 해 두세요.</li></ol>
+    <h3>다른 컴퓨터로 옮기기 / 되살리기</h3>
+    <ol class="steps"><li>새 컴퓨터에서 캘린더를 열고 설정 › 데이터 › <span class="ui">백업 파일로 복원</span> › 백업 파일 고르기 › <span class="ui">복원</span>.</li></ol>
+  </section>
+
+  <section id="s11" class="faq"><h2><span class="n">11</span>자주 묻는 질문</h2>
+    <dl>
+      <dt>다른 선생님이 내 일정을 볼 수 있나요?</dt><dd>아니요. 내 일정·시간표는 내 브라우저에만 저장되고 인터넷 어디에도 올라가지 않아요.</dd>
+      <dt>"학교 자료를 불러오지 못했어요"가 떠요.</dt><dd>인터넷 연결을 확인하세요. 내려받은 파일을 더블클릭해 연 경우에도 이렇게 떠요. 꼭 <code>https://…</code> 주소로 여세요.</dd>
+      <dt>내 학교 시트를 연결했는데 "시트를 읽을 수 없어요"가 떠요.</dt><dd>시트 공유가 "링크가 있는 모든 사용자"인지 확인하세요. 학교 계정(도메인)으로만 공유된 시트는 읽을 수 없어요.</dd>
+      <dt>학교 일정이 두 번씩 보여요.</dt><dd>설정 › 학교 자료 › "주간계획이 나온 주에는 월중 행사계획을 숨기기"를 켜세요. 왼쪽 목록에서 월중 행사계획이나 주간계획 중 하나를 꺼도 돼요.</dd>
+      <dt>시간표가 갑자기 다르게 보여요.</dt><dd>학사일정에 따라 요일 교체·단축수업이 적용된 날일 수 있어요(청록색 칸). 칸을 눌러 이 날만 바꾸거나 되돌릴 수 있어요.</dd>
+      <dt>휴대폰에서도 쓸 수 있나요?</dt><dd>네, 같은 주소를 열면 돼요. 다만 휴대폰과 컴퓨터의 일정은 따로 저장돼요. 백업 파일로 옮길 수 있어요.</dd>
+      <dt>일정이 다 사라졌어요.</dt><dd>브라우저 기록 삭제나 다른 브라우저·시크릿 창일 수 있어요. 백업 파일이 있으면 설정 › 데이터 › 백업 파일로 복원으로 되살리세요.</dd>
+    </dl>
+  </section>
+
+  <footer>학교 캘린더 · 사용법은 인쇄하거나 PDF로 저장해 나눠 쓸 수 있어요.</footer>
+</div>
+</body>
+</html>

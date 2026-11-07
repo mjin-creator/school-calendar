@@ -1,6 +1,6 @@
 // 학교 캘린더 서비스워커: 앱 화면은 저장해 두고(오프라인에서도 열림), 학교 자료는 항상 새로 받아요.
-const CACHE = 'school-calendar-v1';
-const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'config.json'];
+const CACHE = 'school-calendar-v2';
+const SHELL = ['./', 'index.html', 'guide.html', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'config.json'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
