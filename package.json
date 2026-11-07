@@ -1,0 +1,12 @@
+{
+  "name": "school-calendar",
+  "private": true,
+  "type": "module",
+  "description": "학교 캘린더 — 학교 자료 자동 갱신 스크립트",
+  "scripts": { "build": "node scripts/build.mjs" },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.10",
+    "jszip": "^3.10.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}

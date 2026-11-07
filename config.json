@@ -1,0 +1,34 @@
+{
+  "schoolName": "가락중학교",
+  "schoolYear": 2026,
+  "weatherLoc": "부산 강서구",
+  "sheets": {
+    "weekly": "1m3rjtfsqgjFy4xawbdCs4U4xjaFqBzY2s3TV5X1rnE8",
+    "annual": "1Pg0SXUYWaHT1ij-H71uDNgf0I559h-PKMzzHB8IttjM"
+  },
+  "acadFile": "data/academic-calendar.hwpx",
+  "acadTitle": "2026학년도 학사일정(안)",
+  "periods": [
+    {"n": 1, "start": "09:00", "end": "09:45"},
+    {"n": 2, "start": "09:55", "end": "10:40"},
+    {"n": 3, "start": "10:50", "end": "11:35"},
+    {"n": 4, "start": "11:45", "end": "12:30"},
+    {"n": 5, "start": "13:20", "end": "14:05"},
+    {"n": 6, "start": "14:15", "end": "15:00"},
+    {"n": 7, "start": "15:10", "end": "15:55"}
+  ],
+  "links": [
+    {
+      "name": "주간 업무계획",
+      "url": "https://docs.google.com/spreadsheets/d/1m3rjtfsqgjFy4xawbdCs4U4xjaFqBzY2s3TV5X1rnE8/edit"
+    },
+    {
+      "name": "월중 행사계획",
+      "url": "https://docs.google.com/spreadsheets/d/1Pg0SXUYWaHT1ij-H71uDNgf0I559h-PKMzzHB8IttjM/edit"
+    },
+    {
+      "name": "컴시간 교사시간표",
+      "url": "http://xn--s39aqy283b66bj2x.kr/"
+    }
+  ]
+}
